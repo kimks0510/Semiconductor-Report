@@ -6,3 +6,7 @@
 /* SK hynix-inspired learning theme */
 :root{--navy:#4a1022;--blue:#c51f46;--sky:#fff0f3;--ink:#27181d;--muted:#76636a;--line:#eadde1;--bg:#faf5f6;--shadow:0 14px 40px rgba(92,20,43,.10)}
 .reading-progress{background:#ff496d}.site-header{background:rgba(79,10,32,.97)}.brand-mark{width:44px;background:linear-gradient(145deg,#ff4b6e,#a70f37);font-size:12px;letter-spacing:-.5px}.hero{background:radial-gradient(circle at 86% 18%,rgba(255,95,125,.55),transparent 25%),linear-gradient(135deg,#4b0d22 0%,#95163b 58%,#e83c5f 130%)}.eyebrow{color:#ffb5c4}.report h2{color:#741333}.report th{background:#fff0f3;color:#741333}footer{background:#3d0b1b;color:#dcb8c3}
+
+/* Natural Korean line wrapping */
+.hero h1,.hero-copy,.report h2,.report h3,.report p,.report li,.toc a,.hero-meta span{word-break:keep-all;overflow-wrap:break-word}.report a{word-break:break-all}.hero h1{text-wrap:balance}.report h2,.report h3{text-wrap:pretty}
+@media(max-width:760px){.hero h1{font-size:clamp(27px,8.2vw,38px);line-height:1.3;letter-spacing:-.035em}.hero-copy{line-height:1.75}.report h2{line-height:1.45;letter-spacing:-.025em}.report h3{line-height:1.5}.hero-meta span{line-height:1.45}}
