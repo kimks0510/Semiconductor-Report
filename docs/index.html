@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0a2342">
+  <meta name="description" content="AI·메모리 반도체 일일 브리핑과 초보자용 용어 해설">
+  <title>Semiconductor Daily Brief</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="reading-progress" id="readingProgress"></div>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="최신 브리핑으로 이동">
+        <span class="brand-mark">S</span>
+        <span><strong>Semiconductor Brief</strong><small>AI · MEMORY · GSM</small></span>
+      </a>
+      <button class="archive-button" id="archiveButton" type="button" aria-expanded="false" aria-controls="archivePanel">날짜 선택</button>
+    </div>
+  </header>
+
+  <aside class="archive-panel" id="archivePanel" hidden>
+    <div class="archive-card">
+      <div class="archive-title"><strong>브리핑 보관함</strong><button id="archiveClose" type="button" aria-label="닫기">×</button></div>
+      <div id="reportList" class="report-list"></div>
+    </div>
+  </aside>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">DAILY MARKET INTELLIGENCE</p>
+      <h1 id="pageTitle">오늘의 반도체 브리핑</h1>
+      <p class="hero-copy">AI 인프라에서 HBM 수요까지, 시장의 연결고리를 초보자도 이해할 수 있게 설명합니다.</p>
+      <div class="hero-meta"><span id="reportDate">불러오는 중</span><span>약어·제품명 해설 포함</span></div>
+    </section>
+
+    <div class="layout">
+      <nav class="toc" aria-label="문서 목차">
+        <strong>이 보고서에서 보기</strong>
+        <div id="tocLinks"></div>
+      </nav>
+      <article id="report" class="report" aria-live="polite">
+        <div class="loading">브리핑을 불러오고 있습니다.</div>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <p>Semiconductor Daily Report · SK hynix GSM Career Preparation</p>
+    <p>기사 내용은 원문 링크에서 다시 확인할 수 있습니다.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+  <script src="./site.js"></script>
+</body>
+</html>
