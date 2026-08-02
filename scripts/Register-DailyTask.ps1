@@ -9,7 +9,7 @@ $settings = New-ScheduledTaskSettingsSet `
     -WakeToRun `
     -RunOnlyIfNetworkAvailable `
     -RestartCount 3 `
-    -RestartInterval (New-TimeSpan -Minutes 10) `
+    -RestartInterval (New-TimeSpan -Minutes 3) `
     -ExecutionTimeLimit (New-TimeSpan -Hours 3) `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries
