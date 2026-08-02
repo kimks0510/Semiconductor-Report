@@ -1,4 +1,4 @@
-Set-StrictMode -Version Latest
+﻿Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $outputDir = Join-Path $projectRoot 'output'
@@ -18,7 +18,7 @@ if (Test-Path -LiteralPath $outPath) {
 
 Push-Location $projectRoot
 try {
-    $prompt = "Read output/weekly/$weekKey-rollup.md and, for supporting detail, the underlying output/*-briefing.md reports for that same week. Generate 6-10 likely SK hynix GSM (Global Sales & Marketing) job interview questions in Korean that a hiring manager could ask based on this week's semiconductor industry developments. After each question, write a strong 3-5 sentence Korean model answer draft for a candidate transitioning from Samsung Electronics MX division overseas sales, grounded in this week's specific facts, numbers, and dates -- not generic career-fair answers. Save the result to output/weekly/$weekKey-interview-qa.md."
+    $prompt = "Read only output/weekly/$weekKey-rollup.md -- do not open any other report files, the rollup is already a curated digest with dates and sources and is sufficient on its own. Generate 6-10 likely SK hynix GSM (Global Sales & Marketing) job interview questions in Korean that a hiring manager could ask based on this week's semiconductor industry developments. After each question, write a strong 3-5 sentence Korean model answer draft for a candidate transitioning from Samsung Electronics MX division overseas sales, grounded in this week's specific facts, numbers, and dates -- not generic career-fair answers. Save the result to output/weekly/$weekKey-interview-qa.md."
     $ok = Invoke-ClaudeTask -Prompt $prompt -ExpectedOutputPath $outPath -OutputDir $weeklyDir -LogPrefix 'interview-qa'
     if (-not $ok) { throw "Interview Q&A generation failed after retries. See $weeklyDir\interview-qa-*.err.log" }
 } finally {
