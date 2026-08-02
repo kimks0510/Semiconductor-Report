@@ -8,6 +8,7 @@ $briefing = Join-Path $outputDir "$date-briefing.md"
 $runStamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $runLog = Join-Path $outputDir "run-$runStamp.log"
 New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
+. (Join-Path $PSScriptRoot 'ClaudeCommon.ps1')
 
 function Write-RunLog {
     param([string]$Message)
@@ -40,38 +41,9 @@ try {
             $newsWindowInstruction = 'No prior briefing was found; cover news from the last 48 hours through today.'
         }
         $prompt = "Follow AGENTS.md and create today's detailed Korean briefing for $date at output/$date-briefing.md. Verify current news on the web. $newsWindowInstruction Prioritize company IR/newsrooms, filings, regulators, official technical sources, established market-research firms, and Reuters/Bloomberg/FT/WSJ/Nikkei Asia/Yonhap-class reporting. Cross-check interview-worthy claims and label source tiers, estimates, and unconfirmed reports. Do not rely on blogs, communities, or unattributed aggregation. Read prior output reports and place evidence-based 7-day and 30-day cumulative insights near the beginning. For beginners, explain every English acronym and product code on first use with its full name, plain Korean definition, and market significance. Add the required Korean glossary table at the end."
-        $codexSucceeded = $false
-        for ($attempt = 1; $attempt -le 3; $attempt++) {
-            $stdoutLog = Join-Path $outputDir "codex-$runStamp-attempt-$attempt.out.log"
-            $stderrLog = Join-Path $outputDir "codex-$runStamp-attempt-$attempt.err.log"
-            Write-RunLog "Codex attempt $attempt of 3"
-
-            # Windows PowerShell can promote a native program's normal stderr
-            # banner to a terminating ErrorRecord. Keep strict handling for the
-            # script, but temporarily make native stderr non-terminating and use
-            # the program's actual exit code as the success criterion.
-            $savedErrorActionPreference = $ErrorActionPreference
-            try {
-                $ErrorActionPreference = 'Continue'
-                & codex --search --sandbox workspace-write --ask-for-approval never exec $prompt 1>> $stdoutLog 2>> $stderrLog
-                $codexExitCode = $LASTEXITCODE
-            } finally {
-                $ErrorActionPreference = $savedErrorActionPreference
-            }
-            Write-RunLog "Codex attempt $attempt exit code: $codexExitCode"
-
-            if ($codexExitCode -eq 0 -and (Test-Path -LiteralPath $briefing)) {
-                $codexSucceeded = $true
-                break
-            }
-
-            if ($attempt -lt 3) {
-                Write-RunLog 'Retrying in 60 seconds'
-                Start-Sleep -Seconds 60
-            }
-        }
-        if (-not $codexSucceeded) {
-            throw "Codex failed after 3 attempts. See codex-$runStamp-attempt-*.err.log"
+        $ok = Invoke-ClaudeTask -Prompt $prompt -ExpectedOutputPath $briefing -OutputDir $outputDir -LogPrefix 'claude'
+        if (-not $ok) {
+            throw "Claude failed after 3 attempts. See output/claude-*.err.log"
         }
         } finally {
             Pop-Location

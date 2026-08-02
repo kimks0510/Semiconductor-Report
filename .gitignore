@@ -13,8 +13,6 @@ output/delivery-state.json
 
 # Per-run operational logs (noisy, not source)
 output/run-*.log
-output/codex-*.out.log
-output/codex-*.err.log
 output/manual-*.log
 output/trial-*.log
 output/diagnostics-*.txt
@@ -29,7 +27,5 @@ output/weekly/*-run.log
 Korea_Airline_Scrap/output/errors.log
 Korea_Airline_Scrap/output/kakao-send.log
 Korea_Airline_Scrap/output/run-*.log
-Korea_Airline_Scrap/output/codex-*.out.log
-Korea_Airline_Scrap/output/codex-*.err.log
 Korea_Airline_Scrap/output/manual-*.log
 Korea_Airline_Scrap/output/trial-*.log

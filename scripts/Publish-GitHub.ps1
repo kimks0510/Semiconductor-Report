@@ -15,7 +15,7 @@ try {
     & git add -- $relativePath docs
     & git diff --cached --quiet
     if ($LASTEXITCODE -ne 0) {
-        & git commit -m "Publish semiconductor briefing $([IO.Path]::GetFileNameWithoutExtension($BriefingPath))"
+        & git commit -m "Publish $([IO.Path]::GetFileNameWithoutExtension($BriefingPath))"
         if ($LASTEXITCODE -ne 0) { throw "git commit exit code: $LASTEXITCODE" }
     }
     & git push origin HEAD:main

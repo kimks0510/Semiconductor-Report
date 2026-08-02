@@ -33,3 +33,5 @@ foreach ($term in $terms.Keys) {
 }
 $out -join "`n" | Set-Content -LiteralPath $glossaryPath -Encoding UTF8
 Write-Host "$($terms.Count)개 용어를 $glossaryPath 에 저장했습니다."
+
+& (Join-Path $PSScriptRoot 'Publish-GitHub.ps1') -BriefingPath $glossaryPath

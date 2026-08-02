@@ -1,33 +1,32 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-function Invoke-CodexTask {
+function Invoke-ClaudeTask {
     param(
         [Parameter(Mandatory)][string]$Prompt,
         [Parameter(Mandatory)][string]$ExpectedOutputPath,
         [Parameter(Mandatory)][string]$OutputDir,
         [Parameter(Mandatory)][string]$LogPrefix,
+        [string]$AllowedTools = 'WebSearch,WebFetch,Read,Write,Edit,Glob,Grep',
         [int]$MaxAttempts = 3
     )
     $runStamp = Get-Date -Format 'yyyyMMdd-HHmmss'
     for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
         $stdoutLog = Join-Path $OutputDir "$LogPrefix-$runStamp-attempt-$attempt.out.log"
         $stderrLog = Join-Path $OutputDir "$LogPrefix-$runStamp-attempt-$attempt.err.log"
-        Write-Host "Codex attempt $attempt of $MaxAttempts ($LogPrefix)"
+        Write-Host "Claude attempt $attempt of $MaxAttempts ($LogPrefix)"
 
-        # Windows PowerShell can promote a native program's normal stderr
-        # banner to a terminating ErrorRecord; use the exit code as ground truth.
         $savedErrorActionPreference = $ErrorActionPreference
         try {
             $ErrorActionPreference = 'Continue'
-            & codex --search --sandbox workspace-write --ask-for-approval never exec $Prompt 1>> $stdoutLog 2>> $stderrLog
-            $codexExitCode = $LASTEXITCODE
+            & claude -p $Prompt --permission-mode bypassPermissions --allowedTools $AllowedTools 1>> $stdoutLog 2>> $stderrLog
+            $exitCode = $LASTEXITCODE
         } finally {
             $ErrorActionPreference = $savedErrorActionPreference
         }
-        Write-Host "Codex attempt $attempt exit code: $codexExitCode"
+        Write-Host "Claude attempt $attempt exit code: $exitCode"
 
-        if ($codexExitCode -eq 0 -and (Test-Path -LiteralPath $ExpectedOutputPath)) { return $true }
+        if ($exitCode -eq 0 -and (Test-Path -LiteralPath $ExpectedOutputPath)) { return $true }
         if ($attempt -lt $MaxAttempts) { Start-Sleep -Seconds 60 }
     }
     return $false
