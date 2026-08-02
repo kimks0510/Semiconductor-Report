@@ -1,12 +1,5 @@
 ﻿[
     {
-        "id":  "price-indicators",
-        "file":  "price-indicators.md",
-        "type":  "price-indicators",
-        "label":  "가격.공급 지표",
-        "date":  "2026-08-02"
-    },
-    {
         "id":  "competitor-timeline",
         "file":  "competitor-timeline.md",
         "type":  "competitor-timeline",
@@ -21,32 +14,11 @@
         "date":  "2026-08-02"
     },
     {
-        "id":  "weekly-2026-07-20",
-        "file":  "2026-07-20-rollup.md",
-        "type":  "weekly-rollup",
-        "label":  "주간 GSM 롤업 2026-07-20",
-        "date":  "2026-07-20"
-    },
-    {
-        "id":  "interview-2026-07-27",
-        "file":  "2026-07-27-interview-qa.md",
-        "type":  "interview-qa",
-        "label":  "모의 면접 Q\u0026A 2026-07-27",
-        "date":  "2026-07-27"
-    },
-    {
-        "id":  "interview-2026-07-20",
-        "file":  "2026-07-20-interview-qa.md",
-        "type":  "interview-qa",
-        "label":  "모의 면접 Q\u0026A 2026-07-20",
-        "date":  "2026-07-20"
-    },
-    {
-        "id":  "weekly-2026-07-27",
-        "file":  "2026-07-27-rollup.md",
-        "type":  "weekly-rollup",
-        "label":  "주간 GSM 롤업 2026-07-27",
-        "date":  "2026-07-27"
+        "id":  "price-indicators",
+        "file":  "price-indicators.md",
+        "type":  "price-indicators",
+        "label":  "가격.공급 지표",
+        "date":  "2026-08-02"
     },
     {
         "id":  "2026-08-02",
@@ -56,39 +28,25 @@
         "date":  "2026-08-02"
     },
     {
-        "id":  "2026-07-21",
-        "file":  "2026-07-21-briefing.md",
-        "type":  "daily",
-        "label":  "2026-07-21",
-        "date":  "2026-07-21"
-    },
-    {
-        "id":  "2026-07-20",
-        "file":  "2026-07-20-briefing.md",
-        "type":  "daily",
-        "label":  "2026-07-20",
-        "date":  "2026-07-20"
-    },
-    {
-        "id":  "2026-07-19",
-        "file":  "2026-07-19-briefing.md",
-        "type":  "daily",
-        "label":  "2026-07-19",
-        "date":  "2026-07-19"
-    },
-    {
-        "id":  "2026-07-22",
-        "file":  "2026-07-22-briefing.md",
-        "type":  "daily",
-        "label":  "2026-07-22",
-        "date":  "2026-07-22"
-    },
-    {
         "id":  "2026-07-31",
         "file":  "2026-07-31-briefing.md",
         "type":  "daily",
         "label":  "2026-07-31",
         "date":  "2026-07-31"
+    },
+    {
+        "id":  "weekly-2026-07-27",
+        "file":  "2026-07-27-rollup.md",
+        "type":  "weekly-rollup",
+        "label":  "주간 GSM 롤업 2026-07-27",
+        "date":  "2026-07-27"
+    },
+    {
+        "id":  "interview-2026-07-27",
+        "file":  "2026-07-27-interview-qa.md",
+        "type":  "interview-qa",
+        "label":  "모의 면접 Q\u0026A 2026-07-27",
+        "date":  "2026-07-27"
     },
     {
         "id":  "2026-07-25",
@@ -103,5 +61,47 @@
         "type":  "daily",
         "label":  "2026-07-24",
         "date":  "2026-07-24"
+    },
+    {
+        "id":  "2026-07-22",
+        "file":  "2026-07-22-briefing.md",
+        "type":  "daily",
+        "label":  "2026-07-22",
+        "date":  "2026-07-22"
+    },
+    {
+        "id":  "2026-07-21",
+        "file":  "2026-07-21-briefing.md",
+        "type":  "daily",
+        "label":  "2026-07-21",
+        "date":  "2026-07-21"
+    },
+    {
+        "id":  "interview-2026-07-20",
+        "file":  "2026-07-20-interview-qa.md",
+        "type":  "interview-qa",
+        "label":  "모의 면접 Q\u0026A 2026-07-20",
+        "date":  "2026-07-20"
+    },
+    {
+        "id":  "2026-07-20",
+        "file":  "2026-07-20-briefing.md",
+        "type":  "daily",
+        "label":  "2026-07-20",
+        "date":  "2026-07-20"
+    },
+    {
+        "id":  "weekly-2026-07-20",
+        "file":  "2026-07-20-rollup.md",
+        "type":  "weekly-rollup",
+        "label":  "주간 GSM 롤업 2026-07-20",
+        "date":  "2026-07-20"
+    },
+    {
+        "id":  "2026-07-19",
+        "file":  "2026-07-19-briefing.md",
+        "type":  "daily",
+        "label":  "2026-07-19",
+        "date":  "2026-07-19"
     }
 ]
