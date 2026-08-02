@@ -23,6 +23,10 @@ output/*-run.log
 output/weekly/*-attempt-*.log
 output/weekly/*-run.log
 
+# Python pipeline
+pipeline/__pycache__/
+pipeline/*.pyc
+
 # Korean Air sub-project: same rules
 Korea_Airline_Scrap/output/errors.log
 Korea_Airline_Scrap/output/kakao-send.log

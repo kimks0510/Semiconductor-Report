@@ -26,38 +26,18 @@ if (Test-Path -LiteralPath $outPath) {
     return
 }
 
-# Pre-digest: pull only this week's rows out of the already-extracted
-# structured artifacts (cheap local filtering, no LLM) so Claude gets a
-# compact, curated slice instead of reopening every raw daily briefing.
-$priceContext = ''
-$pricePath = Join-Path $outputDir 'price-indicators.csv'
-if (Test-Path -LiteralPath $pricePath) {
-    $rows = @(Import-Csv -LiteralPath $pricePath | Where-Object { $_.report_date -ge $mondayStr -and $_.report_date -le $fridayStr })
-    if ($rows.Count -gt 0) {
-        $lines = $rows | ForEach-Object { "- $($_.report_date) [$($_.product)] $($_.indicator): $($_.value) $($_.unit) ($($_.trend), $($_.source_tier))" }
-        $priceContext = "### Price/supply indicators for this week`n" + ($lines -join "`n")
-    }
+# Pre-digest: pull only this week's rows out of SQLite (cheap local
+# filtering, no LLM) so Claude gets a compact, curated slice instead of
+# reopening every raw daily briefing.
+Push-Location (Join-Path $projectRoot 'pipeline')
+try {
+    $structuredBlock = & python weekly_context.py $mondayStr $fridayStr
+    if ($LASTEXITCODE -ne 0) { throw "weekly_context.py failed with exit code $LASTEXITCODE" }
+} finally {
+    Pop-Location
 }
-
-$competitorContext = ''
-$competitorPath = Join-Path $outputDir 'competitor-timeline.md'
-if (Test-Path -LiteralPath $competitorPath) {
-    $lines = Get-Content -LiteralPath $competitorPath -Encoding UTF8
-    $sectionLines = New-Object System.Collections.Generic.List[string]
-    $inRange = $false
-    foreach ($line in $lines) {
-        if ($line -match '^## (\d{4}-\d{2}-\d{2})') {
-            $inRange = ($Matches[1] -ge $mondayStr -and $Matches[1] -le $fridayStr)
-        }
-        if ($inRange) { $sectionLines.Add($line) }
-    }
-    if ($sectionLines.Count -gt 0) {
-        $competitorContext = "### Competitor timeline entries for this week`n" + ($sectionLines -join "`n")
-    }
-}
-
-$structuredContext = @($priceContext, $competitorContext) | Where-Object { $_ } | ForEach-Object { $_ }
-$structuredBlock = if ($structuredContext) { ($structuredContext -join "`n`n") } else { '(no pre-extracted structured data available for this week yet)' }
+$structuredBlock = ($structuredBlock -join "`n").Trim()
+if (-not $structuredBlock) { $structuredBlock = '(no pre-extracted structured data available for this week yet)' }
 
 Push-Location $projectRoot
 try {
