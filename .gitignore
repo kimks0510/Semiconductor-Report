@@ -1,0 +1,35 @@
+# Korea_Airline_Scrap is its own separate git repo (own remote), not a
+# subtree of this one -- ignore it here so `git add .` never turns it
+# into an embedded-repo gitlink.
+/Korea_Airline_Scrap/
+
+# Local secrets and runtime state
+.env
+.secrets/
+*.token.json
+output/errors.log
+output/kakao-send.log
+output/delivery-state.json
+
+# Per-run operational logs (noisy, not source)
+output/run-*.log
+output/codex-*.out.log
+output/codex-*.err.log
+output/manual-*.log
+output/trial-*.log
+output/diagnostics-*.txt
+output/sleepstudy.html
+output/wake-trial-registration.txt
+output/*-attempt-*.log
+output/*-run.log
+output/weekly/*-attempt-*.log
+output/weekly/*-run.log
+
+# Korean Air sub-project: same rules
+Korea_Airline_Scrap/output/errors.log
+Korea_Airline_Scrap/output/kakao-send.log
+Korea_Airline_Scrap/output/run-*.log
+Korea_Airline_Scrap/output/codex-*.out.log
+Korea_Airline_Scrap/output/codex-*.err.log
+Korea_Airline_Scrap/output/manual-*.log
+Korea_Airline_Scrap/output/trial-*.log
