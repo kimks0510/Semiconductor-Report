@@ -7,6 +7,13 @@
         "date":  "2026-08-09"
     },
     {
+        "id":  "competitor-timeline",
+        "file":  "competitor-timeline.md",
+        "type":  "competitor-timeline",
+        "label":  "경쟁사 타임라인",
+        "date":  "2026-08-09"
+    },
+    {
         "id":  "2026-08-03",
         "file":  "2026-08-03-briefing.md",
         "type":  "daily",
@@ -18,13 +25,6 @@
         "file":  "terms.md",
         "type":  "glossary",
         "label":  "GSM 누적 용어 사전",
-        "date":  "2026-08-02"
-    },
-    {
-        "id":  "competitor-timeline",
-        "file":  "competitor-timeline.md",
-        "type":  "competitor-timeline",
-        "label":  "경쟁사 타임라인",
         "date":  "2026-08-02"
     },
     {
