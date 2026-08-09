@@ -8,8 +8,15 @@ keeps everything else out of its allowed-tools surface.
 """
 import json
 import re
+import shutil
 import subprocess
 import time
+
+# On Windows, "claude" resolves to a .CMD wrapper; subprocess.run's argv-list
+# form (shell=False) doesn't do PATHEXT resolution the way PowerShell's `&`
+# or cmd.exe do, so the bare name raises WinError 2. Resolve it once via
+# shutil.which, which does check PATHEXT correctly.
+CLAUDE_EXE = shutil.which("claude") or "claude"
 
 
 def call_claude_for_json(prompt: str, max_attempts: int = 3) -> list:
@@ -17,7 +24,7 @@ def call_claude_for_json(prompt: str, max_attempts: int = 3) -> list:
     for attempt in range(1, max_attempts + 1):
         print(f"Claude attempt {attempt} of {max_attempts}")
         result = subprocess.run(
-            ["claude", "-p", prompt, "--permission-mode", "bypassPermissions", "--allowedTools", "Read"],
+            [CLAUDE_EXE, "-p", prompt, "--permission-mode", "bypassPermissions", "--allowedTools", "Read"],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
         )
         if result.returncode != 0:

@@ -10,7 +10,7 @@ $settings = New-ScheduledTaskSettingsSet `
     -RunOnlyIfNetworkAvailable `
     -RestartCount 3 `
     -RestartInterval (New-TimeSpan -Minutes 3) `
-    -ExecutionTimeLimit (New-TimeSpan -Minutes 30) `
+    -ExecutionTimeLimit (New-TimeSpan -Minutes 60) `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries
 $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive -RunLevel Limited

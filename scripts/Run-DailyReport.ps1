@@ -40,7 +40,33 @@ try {
         } else {
             $newsWindowInstruction = 'No prior briefing was found; cover news from the last 48 hours through today.'
         }
-        $prompt = "Follow AGENTS.md and create today's detailed Korean briefing for $date at output/$date-briefing.md. Verify current news on the web. $newsWindowInstruction Prioritize company IR/newsrooms, filings, regulators, official technical sources, established market-research firms, and Reuters/Bloomberg/FT/WSJ/Nikkei Asia/Yonhap-class reporting. Cross-check interview-worthy claims and label source tiers, estimates, and unconfirmed reports. Do not rely on blogs, communities, or unattributed aggregation. Read prior output reports and place evidence-based 7-day and 30-day cumulative insights near the beginning. For beginners, explain every English acronym and product code on first use with its full name, plain Korean definition, and market significance. Add the required Korean glossary table at the end."
+
+        # "Read every prior report" for cumulative insights doesn't scale --
+        # it grows with total report count and was the likely cause of the
+        # 2026-08-06 run still not finishing after 24+ minutes. Pre-digest
+        # the last 30 days from the already-extracted structured data
+        # (pipeline/, no LLM cost) instead, same pattern already used for
+        # the weekly rollup.
+        $cumulativeContext = ''
+        $pipelineDir = Join-Path $projectRoot 'pipeline'
+        if (Test-Path -LiteralPath (Join-Path $pipelineDir 'weekly_context.py')) {
+            $since30 = ([datetime]$date).AddDays(-30).ToString('yyyy-MM-dd')
+            Push-Location $pipelineDir
+            try {
+                $cumulativeContext = (& python weekly_context.py $since30 $date) -join "`n"
+            } catch {
+                $cumulativeContext = ''
+            } finally {
+                Pop-Location
+            }
+        }
+        $cumulativeInstruction = if ($cumulativeContext.Trim()) {
+            "For the 7-day and 30-day cumulative insights, use this pre-extracted structured data covering the last 30 days as your primary source instead of reopening every prior output/*-briefing.md file:`n`n$cumulativeContext`n`nOnly open specific prior briefing files if you need narrative context (an exact quote, fuller explanation) the structured data above doesn't capture."
+        } else {
+            'Read prior output reports for cumulative insights (no pre-extracted structured data was available).'
+        }
+
+        $prompt = "Follow AGENTS.md and create today's detailed Korean briefing for $date at output/$date-briefing.md. Verify current news on the web. $newsWindowInstruction Prioritize company IR/newsrooms, filings, regulators, official technical sources, established market-research firms, and Reuters/Bloomberg/FT/WSJ/Nikkei Asia/Yonhap-class reporting. Cross-check interview-worthy claims and label source tiers, estimates, and unconfirmed reports. Do not rely on blogs, communities, or unattributed aggregation. $cumulativeInstruction Place evidence-based 7-day and 30-day cumulative insights near the beginning. For beginners, explain every English acronym and product code on first use with its full name, plain Korean definition, and market significance. Add the required Korean glossary table at the end."
         $ok = Invoke-ClaudeTask -Prompt $prompt -ExpectedOutputPath $briefing -OutputDir $outputDir -LogPrefix 'claude'
         if (-not $ok) {
             throw "Claude failed after 3 attempts. See output/claude-*.err.log"
