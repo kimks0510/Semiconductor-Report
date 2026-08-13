@@ -1,3 +1,4 @@
+param([switch]$Force)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
@@ -5,6 +6,37 @@ $outputDir = Join-Path $projectRoot 'output'
 $errorLog = Join-Path $outputDir 'errors.log'
 $date = Get-Date -Format 'yyyy-MM-dd'
 $briefing = Join-Path $outputDir "$date-briefing.md"
+
+# Cycle gate. The scheduled task now fires on every logon/unlock rather than
+# at a fixed 08:00 (repeated live tests showed a time trigger fires during
+# Modern Standby, where the process can't actually make progress and gets
+# killed). So this decides whether *this* wake-up is one that should run.
+#
+# Anchors are Monday and Thursday. Run only if no briefing has been produced
+# since the most recent anchor. That gives the deferral behaviour directly:
+# skip Monday and Tuesday's first unlock runs it; once it has run for that
+# cycle, later unlocks do nothing until the next anchor comes round.
+function Get-CycleAnchor([datetime]$Now) {
+    for ($i = 0; $i -lt 7; $i++) {
+        $d = $Now.Date.AddDays(-$i)
+        if ($d.DayOfWeek -eq [DayOfWeek]::Monday -or $d.DayOfWeek -eq [DayOfWeek]::Thursday) { return $d }
+    }
+    return $Now.Date
+}
+
+if (-not $Force) {
+    $anchor = Get-CycleAnchor (Get-Date)
+    $latestBriefingDate = Get-ChildItem -LiteralPath $outputDir -Filter '*-briefing.md' -ErrorAction SilentlyContinue |
+        ForEach-Object { $_.BaseName -replace '-briefing$', '' } |
+        Where-Object { $_ -match '^\d{4}-\d{2}-\d{2}$' } |
+        Sort-Object -Descending | Select-Object -First 1
+    if ($latestBriefingDate -and ([datetime]$latestBriefingDate) -ge $anchor) {
+        # Already covered this Mon/Thu cycle. Exit before creating any log
+        # files -- this path runs on every unlock, many times a day.
+        exit 0
+    }
+}
+
 $runStamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $runLog = Join-Path $outputDir "run-$runStamp.log"
 New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
