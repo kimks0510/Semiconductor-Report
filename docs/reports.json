@@ -1,5 +1,12 @@
 ﻿[
     {
+        "id":  "2026-09-13",
+        "file":  "2026-09-13-briefing.md",
+        "type":  "daily",
+        "label":  "2026-09-13",
+        "date":  "2026-09-13"
+    },
+    {
         "id":  "2026-08-31",
         "file":  "2026-08-31-briefing.md",
         "type":  "daily",
@@ -49,17 +56,17 @@
         "date":  "2026-08-10"
     },
     {
-        "id":  "2026-08-09",
-        "file":  "2026-08-09-briefing.md",
-        "type":  "daily",
-        "label":  "2026-08-09",
-        "date":  "2026-08-09"
-    },
-    {
         "id":  "competitor-timeline",
         "file":  "competitor-timeline.md",
         "type":  "competitor-timeline",
         "label":  "경쟁사 타임라인",
+        "date":  "2026-08-09"
+    },
+    {
+        "id":  "2026-08-09",
+        "file":  "2026-08-09-briefing.md",
+        "type":  "daily",
+        "label":  "2026-08-09",
         "date":  "2026-08-09"
     },
     {
