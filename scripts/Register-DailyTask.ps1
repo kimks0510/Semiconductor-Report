@@ -1,8 +1,14 @@
 param([string]$TaskName = 'Semiconductor Daily Report')
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-$runner = Join-Path $PSScriptRoot 'Run-DailyReport.ps1'
-$action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$runner`""
+# Launch through wscript, not powershell.exe directly. The task fires hourly
+# and on every unlock, and running powershell.exe flashed a console window and
+# stole focus every single time -- dozens of times a day, almost always just to
+# hit the cycle gate and exit. The .vbs shim runs the same script with window
+# style 0 so those checks are silent, and still waits for it so the task's
+# ExecutionTimeLimit and MultipleInstances settings keep applying.
+$launcher = Join-Path $PSScriptRoot 'Run-DailyReport-Hidden.vbs'
+$action = New-ScheduledTaskAction -Execute 'wscript.exe' -Argument "`"$launcher`""
 
 # No time trigger. Four separate live tests (2026-07-25, 08-02, 08-06, 08-13)
 # all failed the same way: a Mon/Thu 08:00 trigger fires while the machine is
@@ -32,6 +38,16 @@ $unlockTrigger.UserId = $me
 $unlockTrigger.Enabled = $true
 $unlockTrigger.Delay = 'PT3M'
 
+# Logon and unlock alone leave a real gap: if the machine is simply left
+# logged in and unlocked across midnight -- which is exactly what happened on
+# 2026-09-24 -- neither trigger ever fires again, so a due Thursday cycle sat
+# there untouched. An hourly sweep closes that. It is free: the cycle gate
+# exits immediately when nothing is due, and the window is hidden.
+$hourlyTrigger = New-ScheduledTaskTrigger -Daily -At '00:05'
+$hourlyTrigger.Repetition = (New-CimInstance -CimClass (Get-CimClass -ClassName MSFT_TaskRepetitionPattern -Namespace Root/Microsoft/Windows/TaskScheduler) -ClientOnly)
+$hourlyTrigger.Repetition.Interval = 'PT1H'
+$hourlyTrigger.Repetition.Duration = 'P1D'
+
 $settings = New-ScheduledTaskSettingsSet `
     -StartWhenAvailable `
     -RunOnlyIfNetworkAvailable `
@@ -42,9 +58,10 @@ $settings = New-ScheduledTaskSettingsSet `
     -DontStopIfGoingOnBatteries `
     -MultipleInstances IgnoreNew
 $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive -RunLevel Limited
-Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger @($logonTrigger, $unlockTrigger) -Settings $settings -Principal $principal -Description 'Mon/Thu semiconductor briefing; runs on logon/unlock, defers to the next day the PC is used' -Force | Out-Null
+Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger @($logonTrigger, $unlockTrigger, $hourlyTrigger) -Settings $settings -Principal $principal -Description 'Mon/Thu semiconductor briefing; hidden, runs on logon/unlock/hourly, defers to the next day the PC is used' -Force | Out-Null
 
 $verify = Get-ScheduledTask -TaskName $TaskName
 Write-Host "Scheduled task registered: $TaskName"
-Write-Host "Triggers: $($verify.Triggers.Count) (logon + unlock, both delayed 3 min)"
-Write-Host 'Runs the first time the PC is actually used on Mon/Thu; defers if the PC is off that day.'
+Write-Host "Launcher: $($verify.Actions[0].Execute) (hidden window)"
+Write-Host "Triggers: $($verify.Triggers.Count) (logon + unlock + hourly sweep)"
+Write-Host 'Runs on the first Mon/Thu the PC is used; silent on every other check.'

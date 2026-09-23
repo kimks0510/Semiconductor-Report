@@ -20,6 +20,7 @@ output/sleepstudy.html
 output/wake-trial-registration.txt
 output/*-attempt-*.log
 output/*-run.log
+output/clean-past-briefings.log
 output/weekly/*-attempt-*.log
 output/weekly/*-run.log
 
