@@ -10,6 +10,7 @@
 output/errors.log
 output/kakao-send.log
 output/delivery-state.json
+output/alert-state.json
 
 # Per-run operational logs (noisy, not source)
 output/run-*.log

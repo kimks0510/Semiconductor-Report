@@ -1,4 +1,4 @@
-param([switch]$Force)
+﻿param([switch]$Force)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
@@ -98,7 +98,7 @@ try {
             'Read prior output reports for cumulative insights (no pre-extracted structured data was available).'
         }
 
-        $prompt = "Follow AGENTS.md and create today's detailed Korean briefing for $date at output/$date-briefing.md. Verify current news on the web. $newsWindowInstruction Prioritize company IR/newsrooms, filings, regulators, official technical sources, established market-research firms, and Reuters/Bloomberg/FT/WSJ/Nikkei Asia/Yonhap-class reporting. Cross-check interview-worthy claims and label source tiers, estimates, and unconfirmed reports. Do not rely on blogs, communities, or unattributed aggregation. $cumulativeInstruction Place evidence-based 7-day and 30-day cumulative insights near the beginning. For beginners, explain every English acronym and product code on first use with its full name, plain Korean definition, and market significance. Add the required Korean glossary table at the end."
+        $prompt = "Follow AGENTS.md and create today's detailed Korean briefing for $date at output/$date-briefing.md. Verify current news on the web. $newsWindowInstruction Prioritize company IR/newsrooms, filings, regulators, official technical sources, established market-research firms, and Reuters/Bloomberg/FT/WSJ/Nikkei Asia/Yonhap-class reporting. Cross-check interview-worthy claims and label source tiers, estimates, and unconfirmed reports. Do not rely on blogs, communities, or unattributed aggregation. $cumulativeInstruction Place evidence-based 7-day and 30-day cumulative insights near the beginning. For beginners, give a brief parenthetical explanation (full name + plain Korean meaning) the first time an acronym or product code appears -- do not re-explain it later, and do not add a per-article beginner note. Add one Korean glossary table at the end, 4-6 terms only, per AGENTS.md's lightened glossary rule."
         $ok = Invoke-ClaudeTask -Prompt $prompt -ExpectedOutputPath $briefing -OutputDir $outputDir -LogPrefix 'claude'
         if (-not $ok) {
             throw "Claude failed after 3 attempts. See output/claude-*.err.log"
@@ -114,9 +114,30 @@ try {
     & (Join-Path $PSScriptRoot 'Send-KakaoBriefing.ps1') -BriefingPath $briefing
     Write-RunLog "SUCCESS daily semiconductor report (elapsed $($stopwatch.Elapsed))"
 } catch {
-    $errorMessage = "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ERROR $($_.Exception.Message)"
+    $failureReason = $_.Exception.Message
+    $errorMessage = "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ERROR $failureReason"
     $errorMessage | Add-Content -LiteralPath $errorLog -Encoding UTF8
     Write-RunLog "$errorMessage (elapsed $($stopwatch.Elapsed))"
+
+    # A silent failure is the same as no monitoring at all: the 2026-09-03
+    # OAuth expiry went unnoticed for 12 days because success sent a Kakao
+    # message and failure sent nothing. Make failure produce a signal too.
+    # Throttled to one alert per day (the task fires on every unlock), and
+    # isolated so a broken alert path can never mask the original error.
+    try {
+        $hint = if ($failureReason -match 'Claude failed after') {
+            $lastOut = Get-ChildItem -LiteralPath $outputDir -Filter 'claude-*-attempt-*.out.log' -ErrorAction SilentlyContinue |
+                Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            if ($lastOut) { (Get-Content -LiteralPath $lastOut.FullName -Encoding UTF8 -TotalCount 1) } else { '' }
+        } else { '' }
+        $alert = "$date 생성 실패`n$failureReason"
+        if ($hint) { $alert += "`n> $hint" }
+        if ($hint -match 'Failed to authenticate') { $alert += "`n→ PC 터미널에서 claude auth login 실행 필요" }
+        & (Join-Path $PSScriptRoot 'Send-KakaoAlert.ps1') -Message $alert -ThrottleKey 'daily-report-failure'
+    } catch {
+        "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ERROR alert delivery failed: $($_.Exception.Message)" |
+            Add-Content -LiteralPath $errorLog -Encoding UTF8
+    }
     throw
 } finally {
     $mutex.ReleaseMutex()
