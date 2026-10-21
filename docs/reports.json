@@ -1,5 +1,12 @@
 ﻿[
     {
+        "id":  "2026-10-22",
+        "file":  "2026-10-22-briefing.md",
+        "type":  "daily",
+        "label":  "2026-10-22",
+        "date":  "2026-10-22"
+    },
+    {
         "id":  "2026-10-19",
         "file":  "2026-10-19-briefing.md",
         "type":  "daily",
@@ -161,17 +168,17 @@
         "date":  "2026-08-03"
     },
     {
-        "id":  "2026-08-02",
-        "file":  "2026-08-02-briefing.md",
-        "type":  "daily",
-        "label":  "2026-08-02",
-        "date":  "2026-08-02"
-    },
-    {
         "id":  "terms",
         "file":  "terms.md",
         "type":  "glossary",
         "label":  "GSM 누적 용어 사전",
+        "date":  "2026-08-02"
+    },
+    {
+        "id":  "2026-08-02",
+        "file":  "2026-08-02-briefing.md",
+        "type":  "daily",
+        "label":  "2026-08-02",
         "date":  "2026-08-02"
     },
     {
